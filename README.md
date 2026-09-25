@@ -6,9 +6,19 @@
 
 ### The starter kit for Track 3 of the Build with Gemini World Tour, and a showcase of what participants built with it.
 
-Clone this repo, open [Antigravity](https://antigravity.google), and build your own agent-first app on Google Cloud. Every project in the [gallery below](#-featured-projects) was built the same way: prototyped with Antigravity and `agents-cli`, equipped with Memory, tools, and storage, deployed to Agent Platform, and given a face on Cloud Run.
+---
 
-<br/>
+### 🎭 Featured Agent: LaughCast AI
+**A witty weather assistant that delivers live forecasts, interactive riddles, and parallel AI cartoon memes!**
+
+<img src="demo.gif" alt="LaughCast AI Demo" width="100%" />
+
+- 🌤️ **Live Global Weather**: Instant real-time conditions and temperatures.
+- 🤔 **Interactive Weather Riddle**: Shows a brain-teaser riddle and lets the user click **"Reveal Punchline"**.
+- 🎨 **Parallel Cartoon Meme Synthesis**: Uses Vertex AI `gemini-2.5-flash-image` in a non-blocking background thread while the user reads the joke.
+- ⚡ **Lightning Fast UX**: Delivers the text forecast and riddle in ~2 seconds flat!
+
+---
 
 ![Build with Gemini](https://img.shields.io/badge/Build%20with%20Gemini-World%20Tour-4285F4?logo=google&logoColor=white)
 ![Track 3](https://img.shields.io/badge/Track%203-Agent--First%20Apps-EA4335)
