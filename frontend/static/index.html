@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LaughCast AI · Weather Riddle & Meme Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0b0f19 0%, #111827 50%, #0f172a 100%);
+      --card-bg: rgba(30, 41, 59, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #38bdf8;
+      --primary-gradient: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      --amber: #f59e0b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --user-bubble: linear-gradient(135deg, #2563eb, #1d4ed8);
+      --agent-bubble: #1e293b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(14px);
+      background: rgba(11, 15, 25, 0.85);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-badge {
+      font-size: 1.6rem;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .badge-sub {
+      font-size: 0.75rem;
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-weight: 600;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    main {
+      flex: 1;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 1rem;
+      gap: 1.25rem;
+    }
+
+    .quick-chips {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      border-radius: 999px;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.82rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .chip:hover {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--primary);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      min-height: 480px;
+      overflow-y: auto;
+      padding-bottom: 1rem;
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      max-width: 85%;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user { align-self: flex-end; }
+    .message.user .bubble {
+      background: var(--user-bubble);
+      color: white;
+      border-radius: 18px 18px 4px 18px;
+    }
+
+    .message.agent { align-self: flex-start; width: 100%; max-width: 85%; }
+    .message.agent .bubble {
+      background: var(--agent-bubble);
+      border: 1px solid var(--card-border);
+      border-radius: 18px 18px 18px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .bubble {
+      padding: 1.15rem 1.35rem;
+      font-size: 0.98rem;
+      line-height: 1.6;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .forecast-text {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #f8fafc;
+    }
+
+    .riddle-box {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .riddle-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #fbbf24;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .riddle-question {
+      font-size: 1.02rem;
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .reveal-btn {
+      align-self: flex-start;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.5rem 1.1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+      transition: all 0.2s;
+    }
+
+    .reveal-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+    }
+
+    .punchline-answer {
+      font-size: 1.02rem;
+      color: #38bdf8;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.1);
+      border-left: 3px solid #38bdf8;
+      padding: 0.6rem 0.8rem;
+      border-radius: 0 8px 8px 0;
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .meme-skeleton {
+      border-radius: 12px;
+      padding: 1rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px dashed rgba(56, 189, 248, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--primary);
+    }
+
+    .meme-card {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: #0f172a;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .meme-card img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      display: block;
+      background: #090d16;
+    }
+
+    .meme-footer {
+      padding: 0.5rem 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.95);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .input-bar {
+      position: sticky;
+      bottom: 1rem;
+      background: rgba(22, 27, 34, 0.92);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      padding: 0.4rem 0.5rem;
+    }
+
+    input[type="text"]::placeholder { color: var(--text-muted); }
+
+    button.send-btn {
+      background: var(--primary-gradient);
+      border: none;
+      color: #0b0f19;
+      font-weight: 700;
+      padding: 0.65rem 1.4rem;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    button.send-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+    button.send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(56, 189, 248, 0.2);
+      border-top-color: #38bdf8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="logo-badge">🎭 LaughCast AI</div>
+      <span class="badge-sub">Interactive Weather Riddle</span>
+    </div>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+      Guess the punchline while your meme paints!
+    </div>
+  </header>
+
+  <main>
+    <div class="quick-chips">
+      <div class="chip" onclick="sendPrompt('What is the weather in Seattle?')">🌧️ Seattle</div>
+      <div class="chip" onclick="sendPrompt('What is the weather in Las Vegas?')">🎰 Las Vegas</div>
+      <div class="chip" onclick="sendPrompt('What is the weather in London?')">🎡 London</div>
+      <div class="chip" onclick="sendPrompt('What is the weather in Tokyo?')">🗼 Tokyo</div>
+      <div class="chip" onclick="sendPrompt('What is the weather in Miami?')">🏖️ Miami</div>
+    </div>
+
+    <div class="chat-container" id="chat">
+      <div class="message agent">
+        <div class="bubble">
+          <div class="forecast-text">
+            👋 Welcome to <strong>LaughCast</strong>! Ask for any city's weather, and I'll give you a riddle. Try to guess the punchline before hitting <strong>Reveal Punchline</strong>!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form class="input-bar" id="chat-form" onsubmit="handleSend(event)">
+      <input type="text" id="user-input" placeholder="Type a city (e.g., 'Seattle', 'Paris', 'Chicago')..." autocomplete="off" />
+      <button type="submit" class="send-btn" id="send-button">
+        <span>Get Weather</span> 🚀
+      </button>
+    </form>
+  </main>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-button');
+    const clientId = 'client_' + Math.random().toString(36).substring(2, 9);
+
+    function scrollToBottom() { chat.scrollTop = chat.scrollHeight; }
+
+    function pollMeme(jobId, container) {
+      const interval = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/meme-status/${jobId}`);
+          const data = await res.json();
+          if (data.status === 'ready' && data.url) {
+            clearInterval(interval);
+            container.innerHTML = `
+              <div class="meme-card">
+                <img src="${data.url}" alt="Weather Cartoon Meme" loading="lazy" />
+                <div class="meme-footer">
+                  <span>🎨 Gemini 2.5 Flash Image generated</span>
+                  <a href="${data.url}" target="_blank" style="color: #38bdf8; text-decoration: none;">Full view ↗</a>
+                </div>
+              </div>
+            `;
+            scrollToBottom();
+          } else if (data.status === 'failed') {
+            clearInterval(interval);
+            container.innerHTML = `<div style="font-size:0.8rem; color:#94a3b8; padding:0.3rem;">(Meme skipped: ${data.error || 'Failed to render'})</div>`;
+          }
+        } catch (e) {
+          console.warn('Poll error', e);
+        }
+      }, 1000);
+
+      setTimeout(() => clearInterval(interval), 35000);
+    }
+
+    function addAgentForecast(forecast, setup, punchline, memeJobId) {
+      const msg = document.createElement('div');
+      msg.className = 'message agent';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+
+      // 1. Forecast text
+      const forecastEl = document.createElement('div');
+      forecastEl.className = 'forecast-text';
+      forecastEl.innerHTML = `🌤️ ${forecast.replace(/\n/g, '<br/>')}`;
+      bubble.appendChild(forecastEl);
+
+      // 2. Riddle interactive card
+      if (setup) {
+        const riddleBox = document.createElement('div');
+        riddleBox.className = 'riddle-box';
+
+        const header = document.createElement('div');
+        header.className = 'riddle-header';
+        header.innerHTML = `<span>🤔 Weather Riddle</span>`;
+        riddleBox.appendChild(header);
+
+        const question = document.createElement('div');
+        question.className = 'riddle-question';
+        question.textContent = setup;
+        riddleBox.appendChild(question);
+
+        const punchlineEl = document.createElement('div');
+        punchlineEl.className = 'punchline-answer';
+        punchlineEl.innerHTML = `<strong>💡 Punchline:</strong> ${punchline || "That's the mystery!"}`;
+
+        const revealBtn = document.createElement('button');
+        revealBtn.type = 'button';
+        revealBtn.className = 'reveal-btn';
+        revealBtn.innerHTML = `<span>Reveal Punchline</span> 👀`;
+        revealBtn.onclick = () => {
+          revealBtn.style.display = 'none';
+          punchlineEl.style.display = 'block';
+          scrollToBottom();
+        };
+
+        riddleBox.appendChild(revealBtn);
+        riddleBox.appendChild(punchlineEl);
+        bubble.appendChild(riddleBox);
+      }
+
+      // 3. Background meme container
+      if (memeJobId) {
+        const memeHolder = document.createElement('div');
+        memeHolder.innerHTML = `
+          <div class="meme-skeleton">
+            <div class="spinner"></div>
+            <span>Painting your weather cartoon meme in the background...</span>
+          </div>
+        `;
+        bubble.appendChild(memeHolder);
+        pollMeme(memeJobId, memeHolder);
+      }
+
+      msg.appendChild(bubble);
+      chat.appendChild(msg);
+      scrollToBottom();
+    }
+
+    function addUserMessage(text) {
+      const msg = document.createElement('div');
+      msg.className = 'message user';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+      msg.appendChild(bubble);
+      chat.appendChild(msg);
+      scrollToBottom();
+    }
+
+    function sendPrompt(text) {
+      input.value = text;
+      handleSend(new Event('submit'));
+    }
+
+    async function handleSend(e) {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+
+      input.value = '';
+      addUserMessage(text);
+
+      input.disabled = true;
+      sendBtn.disabled = true;
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, client_id: clientId })
+        });
+        const data = await res.json();
+        addAgentForecast(data.forecast, data.joke_setup, data.joke_punchline, data.meme_job_id);
+      } catch (err) {
+        const msg = document.createElement('div');
+        msg.className = 'message agent';
+        msg.innerHTML = `<div class="bubble">⚠️ Error contacting weather agent: ${err.message}</div>`;
+        chat.appendChild(msg);
+      } finally {
+        input.disabled = false;
+        sendBtn.disabled = false;
+        input.focus();
+        scrollToBottom();
+      }
+    }
+  </script>
+</body>
+</html>
